@@ -1,8 +1,9 @@
 pragma solidity ^0.5.0;
 
 contract Digital_Identity {
+  string public name = "Digital Identity Blockchain";
   uint public identityCount = 0;
-  mapping(uint => Identity) public identities;
+  mapping(uint => Identity) identities;
 
   struct Identity {
     uint id;
@@ -37,9 +38,8 @@ contract Digital_Identity {
   }
 
   function retrieveIdentity(uint _id) public {
+    require(_id > 0 && _id <= identityCount, 'Invalid product ID');
     Identity memory _identity = identities[_id];
-    //address _owner = _identity.owner;
-    require(_identity.id > 0 && _identity.id <= identityCount, 'Invalid product ID');
     emit IdRetrieved(_identity.id, _identity.name, _identity.age, _identity.owner, _identity.verified);
   }
 }

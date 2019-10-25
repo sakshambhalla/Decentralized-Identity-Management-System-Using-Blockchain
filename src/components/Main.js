@@ -43,6 +43,21 @@ class Main extends Component {
             <button type="submit" className="btn btn-primary">Retrieve Identity Information</button>
           </form>
         </div>
+        <div id="add">
+          <h1>Add Identity to the authority </h1>
+          <form action="http://localhost:8001/" method="POST" >
+            <div className="form-group mr-sm-2">
+              <input name="fn" type="text" className="form-control" placeholder="firstname" required />
+              <input name="ln" type="text" className="form-control" placeholder="lastname" required />
+              <input name="phone" type="number" className="form-control" placeholder="Phone number" required />
+              <input name="age" type="number" className="form-control" placeholder="Age" required />
+              <input name="mail" type="email" className="form-control" placeholder="Email" required />
+              <input name="aadhar" type="number" className="form-control" placeholder="Aadhar Number" required />
+            </div>
+            <button type="submit" className="btn btn-primary">Store</button>
+          </form>
+        </div>
+        
       </div>
     );
   }

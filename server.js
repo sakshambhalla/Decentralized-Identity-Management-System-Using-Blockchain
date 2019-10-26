@@ -1,3 +1,4 @@
+
 const express = require('express');
 const route = require('express').Router();
 const bodyParser = require('body-parser');
@@ -15,7 +16,6 @@ var wallet = web3.eth.accounts.create();
 // console.log(wallet);
 // var publicKey = wallet.address;
 // var pr
-var details;
 
 var mysql      = require('mysql');
 var connection = mysql.createConnection({
@@ -27,7 +27,7 @@ var connection = mysql.createConnection({
 
 connection.connect();
 app.post('/', function(req, res){
-     details = req.body.jsonObject;
+     var details = req.body.jsonObject;
      console.log(details)
     connection.query(`Create table if not exists UserIdentity(
         PublicKey varchar(100) PRIMARY KEY,
@@ -121,8 +121,15 @@ function age(details,data){
     })
 }
 
+// async function signData(details){
+//     return new Promise((resolve, reject) => {
+       
+//         resolve(x)
+//     })
+// }
+
 app.post('/authenticate',upload.none(), (req, res) => {
-    const details = req.body.jsonObject;
+    var details = req.body.jsonObject;
     connection.query(`Select * from UserIdentity where PublicKey='${details.publicKey}'`, (err, data) => {
         if(err)throw err;
         else{
@@ -132,11 +139,10 @@ app.post('/authenticate',upload.none(), (req, res) => {
            .then( () => {return phone(details,data[0])})
            .then( () => {return aadhar(details,data[0])})
            .then( () => {return age(details,data[0])})
-           .then( () => {console.log("SUCCESS NIGGA")})
-           .catch( () => {console.log('FAILURE NIGGA')})
+           .then( () => {res.status(200).send(web3.eth.accounts.sign(JSON.stringify(details), wallet.privateKey))})
+           .catch( () => {res.status(400).send({message:"Invalid details"})})
         }
     });
-    res.sendStatus(200);
 })
 
 app.listen(8002, (err) => {

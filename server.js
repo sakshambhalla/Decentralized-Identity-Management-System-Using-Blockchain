@@ -2,10 +2,12 @@ const express = require('express');
 const route = require('express').Router();
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const app = express();
+const app = express();  
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(cors());
+
+var publicKey;
 
 var mysql      = require('mysql');
 var connection = mysql.createConnection({
@@ -16,7 +18,7 @@ var connection = mysql.createConnection({
 });
 
 connection.connect();
-app.post('/', function(req, res){   
+app.post('/', function(req, res){
     var details = req.body;
     connection.query(`Create table if not exists UserIdentity(
         FirstName varchar(30),
@@ -31,7 +33,11 @@ app.post('/', function(req, res){
     });        
     res.sendStatus(200);
 })
-
+app.post('/add',function(req, res){
+    console.log(req.body);
+    publicKey = req.body.account;
+    res.sendStatus(200);
+})
 app.listen(8001, (err) => {
     console.log(`Server is running on port 8000`);
 });

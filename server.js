@@ -34,7 +34,7 @@ app.post('/', function(req, res){
     res.sendStatus(200);
 })
 app.post('/add',function(req, res){
-    console.log(req.body);
+    console.log(req.body.sign);
     publicKey = req.body.account;
     res.sendStatus(200);
 })

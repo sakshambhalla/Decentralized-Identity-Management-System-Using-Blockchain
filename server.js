@@ -2,12 +2,20 @@ const express = require('express');
 const route = require('express').Router();
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const Web3 = require('web3');
 const app = express();  
+const multer = require('multer');
+var upload = multer();
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(cors());
 
-var publicKey;
+var web3 = new Web3('HTTP://127.0.0.1:7545');
+var wallet = web3.eth.accounts.create();
+// console.log(wallet);
+// var publicKey = wallet.address;
+// var pr
+var details;
 
 var mysql      = require('mysql');
 var connection = mysql.createConnection({
@@ -19,7 +27,7 @@ var connection = mysql.createConnection({
 
 connection.connect();
 app.post('/', function(req, res){
-    var details = req.body;
+     details = req.body;
     connection.query(`Create table if not exists UserIdentity(
         FirstName varchar(30),
         LastName varchar(30),
@@ -33,11 +41,14 @@ app.post('/', function(req, res){
     });        
     res.sendStatus(200);
 })
-app.post('/add',function(req, res){
-    console.log(req.body.sign);
-    publicKey = req.body.account;
-    res.sendStatus(200);
+
+app.post('/authenticate',upload.none(), (req, res) => {
+    console.log(req.body);
+    connection.query('Select * from UserIdentity ', (err, data) => {
+
+    });
 })
-app.listen(8001, (err) => {
-    console.log(`Server is running on port 8000`);
+
+app.listen(8002, (err) => {
+    console.log(`Server is running on port 8002`);
 });

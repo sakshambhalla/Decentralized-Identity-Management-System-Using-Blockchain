@@ -1,6 +1,28 @@
 import React, { Component } from 'react';
 import Web3 from 'web3';
 class Main extends Component {
+
+  async loadWeb3() {
+    if (window.ethereum) {
+      window.ethereum.autoRefreshOnNetworkChange = false;
+      window.web3 = new Web3(window.ethereum)
+      await window.ethereum.enable()
+    }
+    else if (window.web3) {
+      window.web3 = new Web3(window.web3.currentProvider)
+    }
+    else {
+      window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
+    }
+  }
+
+  async loadBlockchainData() {
+    const web3 = window.web3;
+    const accounts = await web3.eth.getAccounts();
+    return accounts[0];
+  }
+
+
   render() {
     return (
       <div id="content">
@@ -54,6 +76,35 @@ class Main extends Component {
               <input name="aadhar" type="number" className="form-control" placeholder="Aadhar Number" required />
             </div>
             <button type="submit" className="btn btn-primary">Store</button>
+          </form>
+        </div>
+        
+        <div id="generate">
+          <h1>Generate Verifiable Claim </h1>
+          <form id="form" method="post" onSubmit={ async (event) => {
+            event.preventDefault();
+            var formData = new FormData(document.getElementById('form'));
+            await this.loadWeb3();
+            formData.append('publicKey',await this.loadBlockchainData());
+
+            console.log(formData.publicKey)
+            fetch('http://localhost:8001/authenticate',{
+              method:"post",
+              body: JSON.stringify({formData}),
+              headers: {
+                'Content-Type': 'application/json'
+              },
+            })
+          }}>
+            <div className="form-group mr-sm-2">
+              <input name="fn" type="text" className="form-control" placeholder="firstname"  />
+              <input name="ln" type="text" className="form-control" placeholder="lastname"  />
+              <input name="phone" type="number" className="form-control" placeholder="Phone number"  />
+              <input name="age" type="number" className="form-control" placeholder="Age" />
+              <input name="mail" type="email" className="form-control" placeholder="Email"  />
+              <input name="aadhar" type="number" className="form-control" placeholder="Aadhar Number"  />
+            </div>
+            <button type="submit" className="btn btn-primary">Generate</button>
           </form>
         </div>
         

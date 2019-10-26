@@ -66,7 +66,24 @@ class Main extends Component {
         </div>
         <div id="add">
           <h1>Add Identity to the authority </h1>
-          <form action="http://localhost:8001/" method="POST">
+          <form id="formAuth" onSubmit={ async (event) => {
+            event.preventDefault();
+            var formData = new FormData(document.getElementById('formAuth'));
+            await this.loadWeb3();
+            formData.append('publicKey',await this.loadBlockchainData());
+            let jsonObject = {};
+            for(const [key,value] of formData.entries()){
+              jsonObject[key] = value;
+            }
+            console.log(jsonObject);
+            fetch('http://localhost:8002/',{
+              method:"post",
+              body: JSON.stringify({jsonObject}),
+              headers: {
+                'Content-Type': 'application/json'
+              },
+            })
+          }}>
             <div className="form-group mr-sm-2">
               <input name="fn" type="text" className="form-control" placeholder="firstname" required />
               <input name="ln" type="text" className="form-control" placeholder="lastname" required />
@@ -81,16 +98,19 @@ class Main extends Component {
         
         <div id="generate">
           <h1>Generate Verifiable Claim </h1>
-          <form id="form" method="post" onSubmit={ async (event) => {
+          <form id="form" onSubmit={ async (event) => {
             event.preventDefault();
             var formData = new FormData(document.getElementById('form'));
             await this.loadWeb3();
             formData.append('publicKey',await this.loadBlockchainData());
-
-            console.log(formData.publicKey)
-            fetch('http://localhost:8001/authenticate',{
+            let jsonObject = {};
+            for(const [key,value] of formData.entries()){
+              jsonObject[key] = value;
+            }
+            console.log(jsonObject);
+            fetch('http://localhost:8002/authenticate',{
               method:"post",
-              body: JSON.stringify({formData}),
+              body: JSON.stringify({jsonObject}),
               headers: {
                 'Content-Type': 'application/json'
               },

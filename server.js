@@ -27,26 +27,116 @@ var connection = mysql.createConnection({
 
 connection.connect();
 app.post('/', function(req, res){
-     details = req.body;
+     details = req.body.jsonObject;
+     console.log(details)
     connection.query(`Create table if not exists UserIdentity(
+        PublicKey varchar(100) PRIMARY KEY,
         FirstName varchar(30),
         LastName varchar(30),
         PhoneNumber varchar(40),
         AadharNumber varchar(20),
         Email varchar(100),
-        Age varchar(5)
-        );`, function(err, data){if(err)throw err}); 
-    connection.query(`Insert into UserIdentity(FirstName,LastName,PhoneNumber,AadharNumber,Email,Age) values('${details.fn}','${details.ln}','${details.phone}','${details.aadhar}','${details.mail}','${details.age}');`, function(err,data){
-    if(err) throw err;
-    });        
-    res.sendStatus(200);
+        Age varchar(50)
+        );`, (err, data) => {
+            if(err) throw err;
+            else{
+                connection.query(`Insert into UserIdentity(PublicKey,FirstName,LastName,PhoneNumber,AadharNumber,Email,Age) values('${details.publicKey}', '${details.fn}','${details.ln}','${details.phone}','${details.aadhar}','${details.mail}','${details.age}');`, function(err,data){
+                    if(err) throw err;
+                    else res.sendStatus(200)
+                    });
+            }
+        });         
 })
 
-app.post('/authenticate',upload.none(), (req, res) => {
-    console.log(req.body);
-    connection.query('Select * from UserIdentity ', (err, data) => {
+function fn(details,data){
+    return new Promise((resolve, reject)=>{
+        if(details.fn!=''){
+            if(details.fn == data.FirstName)
+            resolve()
+            else
+            reject()
+        }
+        else
+        resolve()    
+    })
+}
+function ln(details,data){
+    return new Promise((resolve, reject) => {
+        if(details.ln!=''){
+            if(details.ln == data.LastName)
+            resolve()
+            else
+            reject();
+        }
+        else
+        resolve();    
+    })
+    }
+function mail(details,data){
+    return new Promise((resolve, reject) => {
+        if(details.mail!= '' ){
+            if(details.mail == data.Email)
+            resolve()
+            else
+            reject();
+        }
+        else
+        resolve();    
+    })
+}
+function phone(details,data){
+    return new Promise((resolve, reject) => {
+        if(details.phone!= ''){
+            if(details.phone == data.PhoneNumber)
+            resolve()
+            else 
+            reject();
+        }
+        else
+        resolve();
+    })
+}
+function aadhar(details,data){
+    return new Promise((resolve, reject) => {
+        if(details.aadhar!=''){
+            if(details.aadhar == data.AadharNumber)
+            resolve()
+            else
+            reject();
+        }
+        else
+        resolve();
+    })
+}
+function age(details,data){
+    return new Promise((resolve, reject) => {
+        if(details.age!= ''){
+            if(details.age == data.Age)
+            resolve()
+            else
+            reject()
+        }
+        else 
+        resolve();
+    })
+}
 
+app.post('/authenticate',upload.none(), (req, res) => {
+    const details = req.body.jsonObject;
+    connection.query(`Select * from UserIdentity where PublicKey='${details.publicKey}'`, (err, data) => {
+        if(err)throw err;
+        else{
+           fn(details,data[0])
+           .then( () => {return ln(details,data[0])})
+           .then( () => {return mail(details,data[0])})
+           .then( () => {return phone(details,data[0])})
+           .then( () => {return aadhar(details,data[0])})
+           .then( () => {return age(details,data[0])})
+           .then( () => {console.log("SUCCESS NIGGA")})
+           .catch( () => {console.log('FAILURE NIGGA')})
+        }
     });
+    res.sendStatus(200);
 })
 
 app.listen(8002, (err) => {

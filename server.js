@@ -56,7 +56,7 @@ function fn(details,data){
             if(details.fn == data.FirstName)
             resolve()
             else
-            reject()
+            reject("invalid firstname")
         }
         else
         resolve()    
@@ -68,7 +68,7 @@ function ln(details,data){
             if(details.ln == data.LastName)
             resolve()
             else
-            reject();
+            reject("invalid lastname");
         }
         else
         resolve();    
@@ -80,7 +80,7 @@ function mail(details,data){
             if(details.mail == data.Email)
             resolve()
             else
-            reject();
+            reject("invalid mail");
         }
         else
         resolve();    
@@ -92,7 +92,7 @@ function phone(details,data){
             if(details.phone == data.PhoneNumber)
             resolve()
             else 
-            reject();
+            reject("invalid phone number");
         }
         else
         resolve();
@@ -104,7 +104,7 @@ function aadhar(details,data){
             if(details.aadhar == data.AadharNumber)
             resolve()
             else
-            reject();
+            reject("invalid aadhar number");
         }
         else
         resolve();
@@ -116,7 +116,7 @@ function age(details,data){
             if(details.age == data.Age)
             resolve()
             else
-            reject()
+            reject("invalid age")
         }
         else 
         resolve();
@@ -142,7 +142,7 @@ app.post('/authenticate',upload.none(), (req, res) => {
            .then( () => {return aadhar(details,data[0])})
            .then( () => {return age(details,data[0])})
            .then( () => {res.status(200).send(web3.eth.accounts.sign(JSON.stringify(details), wallet.privateKey))})
-           .catch( () => {res.status(400).send({message:"Invalid details"})})
+           .catch( (err) => {res.status(400).send({message:err})})
         }
     });
 })

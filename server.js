@@ -1,5 +1,6 @@
 
 const express = require('express');
+const uniqid = require('uniqid');
 const route = require('express').Router();
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -28,9 +29,10 @@ var connection = mysql.createConnection({
 connection.connect();
 app.post('/', function(req, res){
      var details = req.body.jsonObject;
+     details.identity = uniqid();
      console.log(details)
     connection.query(`Create table if not exists UserIdentity(
-        PublicKey varchar(100) PRIMARY KEY,
+        Identity varchar(100) PRIMARY KEY,
         FirstName varchar(30),
         LastName varchar(30),
         PhoneNumber varchar(40),
@@ -40,9 +42,9 @@ app.post('/', function(req, res){
         );`, (err, data) => {
             if(err) throw err;
             else{
-                connection.query(`Insert into UserIdentity(PublicKey,FirstName,LastName,PhoneNumber,AadharNumber,Email,Age) values('${details.publicKey}', '${details.fn}','${details.ln}','${details.phone}','${details.aadhar}','${details.mail}','${details.age}');`, function(err,data){
+                connection.query(`Insert into UserIdentity(Identity,FirstName,LastName,PhoneNumber,AadharNumber,Email,Age) values('${details.identity}', '${details.fn}','${details.ln}','${details.phone}','${details.aadhar}','${details.mail}','${details.age}');`, function(err,data){
                     if(err) throw err;
-                    else res.sendStatus(200)
+                    else res.status(200).send({identity:details.identity})
                     });
             }
         });         
@@ -130,7 +132,7 @@ function age(details,data){
 
 app.post('/authenticate',upload.none(), (req, res) => {
     var details = req.body.jsonObject;
-    connection.query(`Select * from UserIdentity where PublicKey='${details.publicKey}'`, (err, data) => {
+    connection.query(`Select * from UserIdentity where Identity='${details.identity}'`, (err, data) => {
         if(err)throw err;
         else{
            fn(details,data[0])

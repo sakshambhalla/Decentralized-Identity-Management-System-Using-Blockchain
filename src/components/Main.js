@@ -69,8 +69,6 @@ class Main extends Component {
           <form id="formAuth" onSubmit={ async (event) => {
             event.preventDefault();
             var formData = new FormData(document.getElementById('formAuth'));
-            await this.loadWeb3();
-            formData.append('publicKey',await this.loadBlockchainData());
             let jsonObject = {};
             for(const [key,value] of formData.entries()){
               jsonObject[key] = value;
@@ -82,7 +80,7 @@ class Main extends Component {
               headers: {
                 'Content-Type': 'application/json'
               },
-            })
+            }).then(async(res) => {var id = await res.json();window.alert(`Your Unique Identity Number is ${id.identity}`);})
           }}>
             <div className="form-group mr-sm-2">
               <input name="fn" type="text" className="form-control" placeholder="firstname" required />
@@ -101,8 +99,6 @@ class Main extends Component {
           <form id="form" onSubmit={ async (event) => {
             event.preventDefault();
             var formData = new FormData(document.getElementById('form'));
-            await this.loadWeb3();
-            formData.append('publicKey',await this.loadBlockchainData());
             let jsonObject = {};
             for(const [key,value] of formData.entries()){
               jsonObject[key] = value;
@@ -117,6 +113,7 @@ class Main extends Component {
             })
           }}>
             <div className="form-group mr-sm-2">
+            <input name="identity" type="text" className="form-control" placeholder="Unique Identity Number" required />
               <input name="fn" type="text" className="form-control" placeholder="firstname"  />
               <input name="ln" type="text" className="form-control" placeholder="lastname"  />
               <input name="phone" type="number" className="form-control" placeholder="Phone number"  />

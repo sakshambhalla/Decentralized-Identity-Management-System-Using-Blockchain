@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-const ipfsClient = require('ipfs-http-client');
-const ipfs = ipfsClient({ host: 'ipfs.infura.io', port: '5001', protocol: 'https' });
 class Main extends Component {
   render() {
     return (
@@ -90,27 +88,11 @@ class Main extends Component {
               headers: {
                 'Content-Type': 'application/json'
               },
-            }).then(function(res){
+            }).then(async (res) => {
                      return res.json();
-            }).then(function(res){
-            
-                 var x=JSON.stringify(res);
-          
-                  var buf = Buffer.from(x);
-                  ipfs.add(buf,(error,result)=>{
-
-                  if(error){
-                     console.error(error);
-                  }
-              console.log('ipfs',result);
-              console.log('hash',result[0].hash)
-
-              //getting data back from ipfs  
-              //https://ipfs.infura.io/ipfs/{result[0].hash}
-
-              })
-
-           })
+            }).then(async (res) =>{
+              this.props.addIPFS(res);
+           });
           
          }}>
             <div className="form-group mr-sm-2">

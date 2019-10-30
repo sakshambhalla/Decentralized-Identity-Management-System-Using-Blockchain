@@ -4,6 +4,8 @@ import './App.css';
 import Digital_Identity from '../abis/Digital_Identity.json';
 import Navbar from './Navbar';
 import Main from './Main';
+const ipfsClient = require('ipfs-http-client');
+const ipfs = ipfsClient({ host: 'ipfs.infura.io', port: '5001', protocol: 'https' });
 
 class App extends Component {
   
@@ -59,6 +61,24 @@ class App extends Component {
     console.log(did);
   }
 
+  async addIPFS(res){
+    var x=JSON.stringify(res);
+          
+    var buf = Buffer.from(x);
+    ipfs.add(buf,async (error,result) => {
+
+    if(error){
+        console.error(error);
+    }
+    console.log('ipfs',result);
+    console.log('hash',result[0].hash)
+
+    const xi = await ipfs.get(result[0].hash)
+    const data = JSON.parse(JSON.parse(xi[0].content.toString()).message)
+    console.log('data: ', data);
+    });
+  }
+
   constructor(props) {
     super(props);
     this.state = {
@@ -69,6 +89,7 @@ class App extends Component {
 
     this.createIdentity = this.createIdentity.bind(this);
     this.retrieveIdentity = this.retrieveIdentity.bind(this);
+    this.addIPFS = this.addIPFS.bind(this);
   }
   
   render() {
@@ -88,6 +109,7 @@ class App extends Component {
                   createIdentity={this.createIdentity}
                   retrieveIdentity={this.retrieveIdentity}
                   publicKey = {this.state.account}
+                  addIPFS = {this.addIPFS}
                   />
               }
             </main>

@@ -14,10 +14,7 @@
     "chai": "4.2.0",
     "chai-as-promised": "7.1.1",
     "chai-bignumber": "3.0.0",
-<<<<<<< HEAD
     "cors": "^2.8.5",
-=======
->>>>>>> ad839b7d57804817cace4d184ba4fd89d1f19416
     "ipfs-http-client": "^39.0.2",
     "json-stringify-safe": "^5.0.1",
     "morgan": "^1.9.1",

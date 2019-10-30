@@ -77,6 +77,7 @@ class Main extends Component {
             event.preventDefault();
             var formData = new FormData(document.getElementById('form'));
             let jsonObject = {};
+            formData.append("UserPublicKey", this.props.publicKey);
             for(const [key,value] of formData.entries()){
               jsonObject[key] = value;
             }

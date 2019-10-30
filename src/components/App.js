@@ -86,7 +86,9 @@ class App extends Component {
                 : <Main
                   did={this.state.did}
                   createIdentity={this.createIdentity}
-                  retrieveIdentity={this.retrieveIdentity} />
+                  retrieveIdentity={this.retrieveIdentity}
+                  publicKey = {this.state.account}
+                  />
               }
             </main>
           </div>

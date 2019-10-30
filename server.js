@@ -141,7 +141,7 @@ app.post('/authenticate',upload.none(), (req, res) => {
            .then( () => {return phone(details,data[0])})
            .then( () => {return aadhar(details,data[0])})
            .then( () => {return age(details,data[0])})
-           .then( () => {res.status(200).send(web3.eth.accounts.sign(JSON.stringify(details), wallet.privateKey))})
+           .then( () => {var signedResponse = details;signedResponse.AuthPublicKey=wallet.address; res.status(200).send(web3.eth.accounts.sign(JSON.stringify(signedResponse), wallet.privateKey))})
            .catch( (err) => {res.status(400).send({message:err})})
         }
     });

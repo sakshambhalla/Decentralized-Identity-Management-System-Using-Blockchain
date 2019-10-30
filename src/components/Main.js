@@ -89,7 +89,7 @@ class Main extends Component {
                 'Content-Type': 'application/json'
               },
             }).then(async (res) => {
-                     return res.json();
+              return res.json();
             }).then(async (res) =>{
               this.props.addIPFS(res);
            });

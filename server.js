@@ -52,7 +52,7 @@ app.post('/', function(req, res){
 
 function fn(details,data){
     return new Promise((resolve, reject)=>{
-        if(details.fn!=''){
+        if(details.fn){
             if(details.fn == data.FirstName)
             resolve()
             else
@@ -64,7 +64,7 @@ function fn(details,data){
 }
 function ln(details,data){
     return new Promise((resolve, reject) => {
-        if(details.ln!=''){
+        if(details.ln){
             if(details.ln == data.LastName)
             resolve()
             else
@@ -76,7 +76,7 @@ function ln(details,data){
     }
 function mail(details,data){
     return new Promise((resolve, reject) => {
-        if(details.mail!= '' ){
+        if(details.mail){
             if(details.mail == data.Email)
             resolve()
             else
@@ -88,7 +88,7 @@ function mail(details,data){
 }
 function phone(details,data){
     return new Promise((resolve, reject) => {
-        if(details.phone!= ''){
+        if(details.phone){
             if(details.phone == data.PhoneNumber)
             resolve()
             else 
@@ -100,7 +100,7 @@ function phone(details,data){
 }
 function aadhar(details,data){
     return new Promise((resolve, reject) => {
-        if(details.aadhar!=''){
+        if(details.aadhar){
             if(details.aadhar == data.AadharNumber)
             resolve()
             else
@@ -112,7 +112,7 @@ function aadhar(details,data){
 }
 function age(details,data){
     return new Promise((resolve, reject) => {
-        if(details.age!= ''){
+        if(details.age){
             if(details.age == data.Age)
             resolve()
             else
@@ -131,7 +131,26 @@ function age(details,data){
 // }
 
 app.post('/authenticate',upload.none(), (req, res) => {
-    var details = req.body.jsonObject;
+    var details = {};
+    details.identity = req.body.jsonObject.identity;
+    if(req.body.jsonObject.fn != '')
+    details.fn = req.body.jsonObject.fn;
+    
+    if(req.body.jsonObject.ln != '')
+    details.ln = req.body.jsonObject.ln;
+    
+    if(req.body.jsonObject.age != '')
+    details.age = req.body.jsonObject.age;
+    
+    if(req.body.jsonObject.aadhar != '')
+    details.aadhar = req.body.jsonObject.aadhar;
+    
+    if(req.body.jsonObject.mail != '')
+    details.mail = req.body.jsonObject.mail;
+    
+    if(req.body.jsonObject.phone != '')
+    details.phone = req.body.jsonObject.phone;
+    console.log(details)
     connection.query(`Select * from UserIdentity where Identity='${details.identity}'`, (err, data) => {
         if(err)throw err;
         else{

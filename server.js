@@ -150,7 +150,6 @@ app.post('/authenticate',upload.none(), (req, res) => {
     
     if(req.body.jsonObject.phone != '')
     details.phone = req.body.jsonObject.phone;
-    console.log(details)
     connection.query(`Select * from UserIdentity where Identity='${details.identity}'`, (err, data) => {
         if(err)throw err;
         else{
@@ -160,7 +159,13 @@ app.post('/authenticate',upload.none(), (req, res) => {
            .then( () => {return phone(details,data[0])})
            .then( () => {return aadhar(details,data[0])})
            .then( () => {return age(details,data[0])})
-           .then( () => {var signedResponse = details;signedResponse.AuthPublicKey=wallet.address; res.status(200).send(web3.eth.accounts.sign(JSON.stringify(signedResponse), wallet.privateKey))})
+           .then( () => {
+               var signedResponse = { 
+                   data: details,
+                   UserPublicKey: req.body.jsonObject.UserPublicKey
+               }
+               res.status(200).send(web3.eth.accounts.sign(JSON.stringify(signedResponse), wallet.privateKey));
+            })
            .catch( (err) => {res.status(400).send({message:err})})
         }
     });

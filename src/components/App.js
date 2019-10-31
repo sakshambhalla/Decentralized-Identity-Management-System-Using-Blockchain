@@ -38,44 +38,43 @@ class App extends Component {
     if(networkData) {
       const identity = web3.eth.Contract(Digital_Identity.abi, networkData.address);
       this.setState({ identity });
-      const identityCount = await identity.methods.identityCount().call();
-      this.setState({ identityCount });
+      // const identityCount = await identity.methods.identityCount().call();
+      // this.setState({ identityCount });
       this.setState({ loading: false });
-      if(identityCount)
-        console.log(identityCount.toNumber());
+      // if(identityCount)
+      //   console.log(identityCount.toNumber());
     } else {
       window.alert('Digital Identity contract not deployed to detect network.');
     }
   }
 
-  async createIdentity (name, age) {
-    this.setState({ loading: true });
-    this.state.identity.methods.createIdentity(name, age).send({ from: this.state.account });
-    this.setState({loading: false});
-  }
+  // async createIdentity (name, age) {
+  //   this.setState({ loading: true });
+  //   this.state.identity.methods.createIdentity(name, age).send({ from: this.state.account });
+  //   this.setState({loading: false});
+  // }
 
-  async retrieveIdentity(_id) {
+  async retrieveIdentity() {
     this.setState({loading: true});
-    const did = await this.state.identity.methods.identities(_id).call();
+    const did = await this.state.identity.methods.identities(this.state.account).call();
     this.setState({loading: false});
     console.log(did);
+    let data = await ipfs.get(did.contentAddress);
+    let d = JSON.parse(data[0].content.toString())
+    //console.log(d);
+    console.log("data: ", JSON.parse(d.message));
+    console.log("signature: ", d.signature);
   }
 
   async addIPFS(res){
-    var x=JSON.stringify(res);
-          
-    var buf = Buffer.from(x);
+    var buf = Buffer.from(JSON.stringify(res));
     ipfs.add(buf,async (error,result) => {
-
-    if(error){
-        console.error(error);
-    }
-    console.log('ipfs',result);
-    console.log('hash',result[0].hash)
-
-    const xi = await ipfs.get(result[0].hash)
-    const data = JSON.parse(JSON.parse(xi[0].content.toString()).message)
-    console.log('data: ', data);
+      if(error) {
+        return;
+      }
+      console.log(result[0].hash);
+      console.log(this.state.identity);
+      this.state.identity.methods.createIdentity(result[0].hash).send({ from: this.state.account });
     });
   }
 
@@ -87,7 +86,7 @@ class App extends Component {
       loading: true
     }
 
-    this.createIdentity = this.createIdentity.bind(this);
+    //this.createIdentity = this.createIdentity.bind(this);
     this.retrieveIdentity = this.retrieveIdentity.bind(this);
     this.addIPFS = this.addIPFS.bind(this);
   }
@@ -106,7 +105,7 @@ class App extends Component {
                 ? <div id="loader" className="text-center"><p className="text-center">Loading...</p></div> 
                 : <Main
                   did={this.state.did}
-                  createIdentity={this.createIdentity}
+                  // createIdentity={this.createIdentity}
                   retrieveIdentity={this.retrieveIdentity}
                   publicKey = {this.state.account}
                   addIPFS = {this.addIPFS}

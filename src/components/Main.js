@@ -36,7 +36,7 @@ class Main extends Component {
           }}>
             <div className="form-group mr-sm-2">
               <input id="id" type="number" ref={(input) => {this.id = input}}
-                className="form-control" placeholder="Digital Identity" required />
+                className="form-control" placeholder="Digital Identity" />
             </div>
             <button type="submit" className="btn btn-primary">Retrieve Identity Information</button>
           </form>

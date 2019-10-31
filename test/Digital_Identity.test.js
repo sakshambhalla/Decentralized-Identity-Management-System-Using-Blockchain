@@ -26,40 +26,42 @@ contract('Digital_Identity', ([user, authority]) => {
   });
 
   describe('identity', async () => {
-    let result, identityCount;
+    let CA = "QmYokvq4GYMFAHWxzj4aYQ7tAn6FnNNWM4iMfEE1b7TECd";
+    let result, id;
     before(async () => {
-      result = await identity.createIdentity('Vinay', 21, { from: user });
-      identityCount = await identity.identityCount();
+      result = await identity.createIdentity(CA, { from: user });
+      id = await identity.identities(user);
     });
+    console.log(id);
 
     it('creates identity', async () => {
-      // SUCCESS
-      assert.equal(identityCount, 1);
-      const event = result.logs[0].args;
-      assert.equal(event.id.toNumber(), identityCount, 'id is correct');
-      assert.equal(event.name, 'Vinay', 'Name is Correct');
-      assert.equal(event.age, 21, 'Age is Correct');
-      assert.equal(event.owner, user, 'Owner is Correct');
-      assert.equal(event.verified, true, 'Verified is Correct');
+  //     // SUCCESS
+      assert.equal(id.contentAddress, CA);
+      //const event = result.logs[0].args;
+  //     assert.equal(event.id.toNumber(), identityCount, 'id is correct');
+      //console.log(event.data);
+  //     assert.equal(event.age, 21, 'Age is Correct');
+  //     assert.equal(event.owner, user, 'Owner is Correct');
+  //     assert.equal(event.verified, true, 'Verified is Correct');
 
-      // FAILURE
-      await identity.createIdentity('', 20, { from: user }).should.be.rejected;
-      await identity.createIdentity('Vinay', 0, { from: user }).should.be.rejected;
+  //     // FAILURE
+  //     await identity.createIdentity('', 20, { from: user }).should.be.rejected;
+  //     await identity.createIdentity('Vinay', 0, { from: user }).should.be.rejected;
     });
 
-    it('Retrieved Identity', async () => {
-      // SUCCESS
-      const id = await identity.retrieveIdentity(identityCount, { from: authority });
-      const event = id.logs[0].args;
-      assert.equal(event.id.toNumber(), identityCount.toNumber(), 'id is correct');
-      assert.equal(event.name, 'Vinay', 'Name is Correct');
-      assert.equal(event.age, 21, 'Age is Correct');
-      assert.equal(event.owner, user, 'Owner is Correct');
-      assert.equal(event.verified, true, 'Verified is Correct');
+  //   it('Retrieved Identity', async () => {
+  //     // SUCCESS
+  //     const id = await identity.retrieveIdentity(identityCount, { from: authority });
+  //     const event = id.logs[0].args;
+  //     assert.equal(event.id.toNumber(), identityCount.toNumber(), 'id is correct');
+  //     assert.equal(event.name, 'Vinay', 'Name is Correct');
+  //     assert.equal(event.age, 21, 'Age is Correct');
+  //     assert.equal(event.owner, user, 'Owner is Correct');
+  //     assert.equal(event.verified, true, 'Verified is Correct');
 
-      // FAILURE
-      await identity.retrieveIdentity(0, { from: authority }).should.be.rejected;
-      await identity.retrieveIdentity(99, { from: authority }).should.be.rejected;
-    })
+  //     // FAILURE
+  //     await identity.retrieveIdentity(0, { from: authority }).should.be.rejected;
+  //     await identity.retrieveIdentity(99, { from: authority }).should.be.rejected;
+  //   })
   });
 });

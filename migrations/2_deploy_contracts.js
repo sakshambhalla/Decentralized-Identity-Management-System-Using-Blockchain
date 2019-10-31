@@ -1,5 +1,5 @@
-const Digital_Identity = artifacts.require("Digital_Identity");
+const contracts = [ artifacts.require("Digital_Identity") ];
 
-module.exports = function(deployer) {
-  deployer.deploy(Digital_Identity);
-};
+module.exports = _deployer =>
+  contracts.map(_contract =>
+    _deployer.deploy(_contract))

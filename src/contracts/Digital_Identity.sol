@@ -1,46 +1,25 @@
-pragma solidity ^0.5.0;
+pragma solidity 0.5.0;
+import "./provableAPI.sol";
 
-contract Digital_Identity {
+contract Digital_Identity is usingProvable {
   string public name = "Digital Identity Blockchain";
-  uint public identityCount = 0;
-  mapping(uint => Identity) public identities;
+  mapping(address => Identity) public identities;
 
   struct Identity {
-    uint id;
-    string name;
-    uint age;
-    address owner;
-    bool verified;
+    address did;
+    string contentAddress;
   }
 
-  event IdCreated(
-    uint id,
-    string name,
-    uint age,
-    address owner,
-    bool verified
-  );
+  event Received(string data);
 
-  event IdRetrieved(
-    uint id,
-    string name,
-    uint age,
-    address owner,
-    bool verified
-  );
-
-  function createIdentity(string memory _name, uint _age) public returns(uint) {
-    require(bytes(_name).length > 0, 'Invalid name');
-    require(_age > 0, 'Invalid age');
-    identityCount++;
-    identities[identityCount] = Identity(identityCount, _name, _age, msg.sender, true);
-    emit IdCreated(identityCount, _name, _age, msg.sender, true);
-    return identityCount;
+  function createIdentity(string memory _contentAddress) public {
+    require(bytes(_contentAddress).length > 0, 'Invalid address');
+    //provable_query("IPFS", "QmYokvq4GYMFAHWxzj4aYQ7tAn6FnNNWM4iMfEE1b7TECd");
+    identities[msg.sender] = Identity(msg.sender, _contentAddress);
   }
 
-  function retrieveIdentity(uint _id) public {
-    require(_id > 0 && _id <= identityCount, 'Invalid product ID');
-    Identity memory _identity = identities[_id];
-    emit IdRetrieved(_identity.id, _identity.name, _identity.age, _identity.owner, _identity.verified);
-  }
+  // function retrieveIdentity(uint _id) public {
+  //   require(_id > 0 && _id <= identityCount, 'Invalid product ID');
+  //   //Identity memory _identity = identities[_id];
+  // }
 }

@@ -54,9 +54,10 @@ class App extends Component {
   //   this.setState({loading: false});
   // }
 
-  async retrieveIdentity(_did) {
+
+  async retrieveIdentity(publicKey) {
     this.setState({loading: true});
-    const did = await this.state.identity.methods.identities(_did).call();
+    const did = await this.state.identity.methods.identities(publicKey).call();
     this.setState({loading: false});
     console.log(did);
     let data = await ipfs.get(did.contentAddress);

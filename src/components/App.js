@@ -12,7 +12,6 @@ class App extends Component {
   async componentWillMount() {
     await this.loadWeb3();
     await this.loadBlockchainData();
-    //await this.createIdentity('Vinay', 21);
   }
 
   async loadWeb3() {
@@ -31,51 +30,64 @@ class App extends Component {
 
   async loadBlockchainData() {
     const web3 = window.web3;
-    const accounts = await web3.eth.getAccounts();
+    const accounts = await web3.eth.getAccounts(); 
     this.setState({ account: accounts[0] });
+    window.ethereum.on('accountsChanged', (accounts) => {
+      this.setState({ account: accounts[0] });
+    });
     const networkId = await web3.eth.net.getId();
     const networkData = Digital_Identity.networks[networkId];
     if(networkData) {
       const identity = web3.eth.Contract(Digital_Identity.abi, networkData.address);
       this.setState({ identity });
-      // const identityCount = await identity.methods.identityCount().call();
-      // this.setState({ identityCount });
       this.setState({ loading: false });
-      // if(identityCount)
-      //   console.log(identityCount.toNumber());
     } else {
       window.alert('Digital Identity contract not deployed to detect network.');
     }
   }
 
-  // async createIdentity (name, age) {
-  //   this.setState({ loading: true });
-  //   this.state.identity.methods.createIdentity(name, age).send({ from: this.state.account });
-  //   this.setState({loading: false});
-  // }
+  verify(res) {
+    let verify = window.web3.eth.accounts.recover(res);
+    let auth = '0x42BA89C26397348bD326932e43beF5Be0f2a0072';
+    if(auth !== verify) {
+      window.alert("Authentication Failed!\nPlease Try Again...");
+      return false;
+    }
+    return true;
+  }
 
   async retrieveIdentity(publicKey) {
     this.setState({loading: true});
     const did = await this.state.identity.methods.identities(publicKey).call();
     this.setState({loading: false});
-    console.log(did);
-    let data = await ipfs.get(did.contentAddress);
-    let d = JSON.parse(data[0].content.toString())
-    //console.log(d);
-    console.log("data: ", JSON.parse(d.message));
-    console.log("signature: ", d.signature);
+    if(did.contentAddress) {
+      let data = await ipfs.get(did.contentAddress);
+      let d = JSON.parse(data[0].content.toString())
+      if(this.verify(d)) {
+        let data = JSON.parse(d.message);
+        let str = "DID: " + data.UserPublicKey + "\n";
+        for(let key in data.data) {
+          str += key +": " + data.data[key] + "\n";
+        }
+        window.alert("Identity Retrieved and Verified Successfully...\n" + str);
+      }
+    } else {
+      window.alert("Invalid Digital Identity");
+    }
   }
 
   async addIPFS(res){
-    var buf = Buffer.from(JSON.stringify(res));
-    ipfs.add(buf,async (error,result) => {
-      if(error) {
-        return;
-      }
-      console.log(result[0].hash);
-      console.log(this.state.identity);
-      this.state.identity.methods.createIdentity(result[0].hash).send({ from: this.state.account });
-    });
+    if(this.verify(res)) {
+      var buf = Buffer.from(JSON.stringify(res));
+      ipfs.add(buf,async (error,result) => {
+        if(error) {
+          return;
+        }
+        this.state.identity.methods.createIdentity(result[0].hash).send({ from: this.state.account });
+        console.log(this.state.account);
+        window.alert("Digital Identity Created Successfully...\nDID: " + this.state.account);
+      });
+    }
   }
 
   constructor(props) {
@@ -86,7 +98,6 @@ class App extends Component {
       loading: true
     }
 
-    //this.createIdentity = this.createIdentity.bind(this);
     this.retrieveIdentity = this.retrieveIdentity.bind(this);
     this.addIPFS = this.addIPFS.bind(this);
   }
@@ -105,7 +116,6 @@ class App extends Component {
                 ? <div id="loader" className="text-center"><p className="text-center">Loading...</p></div> 
                 : <Main
                   did={this.state.did}
-                  // createIdentity={this.createIdentity}
                   retrieveIdentity={this.retrieveIdentity}
                   publicKey = {this.state.account}
                   addIPFS = {this.addIPFS}

@@ -13,10 +13,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(cors());
 
 var web3 = new Web3('HTTP://127.0.0.1:7545');
-var wallet = web3.eth.accounts.create();
-// console.log(wallet);
-// var publicKey = wallet.address;
-// var pr
+var wallet = web3.eth.accounts.privateKeyToAccount('0x511853cf9946a28c62596cb67b97826312d333446a2ccde1bcf9881cfc74ba20');
 
 var mysql      = require('mysql');
 var connection = mysql.createConnection({

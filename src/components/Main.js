@@ -57,6 +57,7 @@ class Main extends Component {
               }
               return res.json();
             }).then(async (res) =>{
+              if(res.status != 400)
               this.props.addIPFS(res);
            });  
           }}>

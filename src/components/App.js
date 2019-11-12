@@ -46,6 +46,79 @@ class App extends Component {
     }
   }
 
+async fn(details,data){
+  return new Promise((resolve, reject)=>{
+      if(details.fn){
+          if(details.fn == data.fn)
+          resolve()
+          else
+          reject("invalid firstname")
+      }
+      else
+      resolve()    
+  })
+}
+async ln(details,data){
+  return new Promise((resolve, reject) => {
+      if(details.ln){
+          if(details.ln == data.ln)
+          resolve()
+          else
+          reject("invalid lastname");
+      }
+      else
+      resolve();    
+  })
+  }
+async mail(details,data){
+  return new Promise((resolve, reject) => {
+      if(details.mail){
+          if(details.mail == data.mail)
+          resolve()
+          else
+          reject("invalid mail");
+      }
+      else
+      resolve();    
+  })
+}
+async phone(details,data){
+  return new Promise((resolve, reject) => {
+      if(details.phone){
+          if(details.phone == data.phone)
+          resolve()
+          else 
+          reject("invalid phone number");
+      }
+      else
+      resolve();
+  })
+}
+async aadhar(details,data){
+  return new Promise((resolve, reject) => {
+      if(details.aadhar){
+          if(details.aadhar == data.aadhar)
+          resolve()
+          else
+          reject("invalid aadhar number");
+      }
+      else
+      resolve();
+  })
+}
+async age(details,data){
+  return new Promise((resolve, reject) => {
+      if(details.age){
+          if(details.age == data.age)
+          resolve()
+          else
+          reject("invalid age")
+      }
+      else 
+      resolve();
+  })
+}
+
   verify(res) {
     let verify = window.web3.eth.accounts.recover(res);
     let auth = '0x42BA89C26397348bD326932e43beF5Be0f2a0072';
@@ -75,6 +148,50 @@ class App extends Component {
       window.alert("Invalid Digital Identity");
     }
   }
+  async verifierEntity(verifierData){
+    this.setState({loading: true});
+    const did =                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        await this.state.identity.methods.identities(verifierData.publicKey).call();
+    this.setState({loading: false});
+    if(did.contentAddress) {
+      let data = await ipfs.get(did.contentAddress);
+      let d = JSON.parse(data[0].content.toString())
+      if(this.verify(d)) {
+        let data = JSON.parse(d.message);
+
+        var details = {};
+    details.publicKey = verifierData.publicKey;
+    if(verifierData.fn != '')
+    details.fn = verifierData.fn;
+    
+    if(verifierData.ln != '')
+    details.ln = verifierData.ln;
+    
+    if(verifierData.age != '')
+    details.age = verifierData.age;
+    
+    if(verifierData.aadhar != '')
+    details.aadhar = verifierData.aadhar;
+    
+    if(verifierData.mail != '')
+    details.mail = verifierData.mail;
+    
+    if(verifierData.phone != '')
+    details.phone = verifierData.phone;
+    console.log(data);
+
+    this.fn(details,data.data)
+    .then( () => {return this.ln(details,data.data)})
+    .then( () => {return this.mail(details,data.data)})
+    .then( () => {return this.phone(details,data.data)})
+    .then( () => {return this.aadhar(details,data.data)})
+    .then( () => {return this.age(details,data.data)})
+    .then( () => {  window.alert("Identity Verified Successfully...\n");})
+    .catch((error) => {window.alert(error)})
+      }
+    } else {
+      window.alert("Invalid Digital Signature");
+    }
+  }
 
   async addIPFS(res){
     if(this.verify(res)) {
@@ -100,6 +217,7 @@ class App extends Component {
 
     this.retrieveIdentity = this.retrieveIdentity.bind(this);
     this.addIPFS = this.addIPFS.bind(this);
+    this.verifierEntity = this.verifierEntity.bind(this);
   }
   
   render() {
@@ -117,6 +235,7 @@ class App extends Component {
                 : <Main
                   did={this.state.did}
                   retrieveIdentity={this.retrieveIdentity}
+                  verifierEntity={this.verifierEntity}
                   publicKey = {this.state.account}
                   addIPFS = {this.addIPFS}
                   />

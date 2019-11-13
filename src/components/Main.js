@@ -51,30 +51,33 @@ class Main extends Component {
                 'Content-Type': 'application/json'
               },
             }).then(async (res) => {
+              if(res.status == 400){
+                window.alert('Invalid details')
+                return;
+              }
               return res.json();
             }).then(async (res) =>{
-              if(res.status)
-                this.props.addIPFS(res.message);
-              else
-                window.alert(res.message);
-           });
+
+              if(res.status != 400)
+              this.props.addIPFS(res);
+           });  
           }}>
             <div className="form-group mr-sm-2">
               <input name="identity" type="text" className="form-control" placeholder="Unique Identity Number" required />
-              <input name="fn" type="text" className="form-control" placeholder="firstname"  />
-              <input name="ln" type="text" className="form-control" placeholder="lastname"  />
-              <input name="phone" type="number" className="form-control" placeholder="Phone number"  />
-              <input name="age" type="number" className="form-control" placeholder="Age" />
-              <input name="mail" type="email" className="form-control" placeholder="Email"  />
-              <input name="aadhar" type="number" className="form-control" placeholder="Aadhar Number"  />
+              <input name="fn" type="text" className="form-control" placeholder="firstname"  required/>
+              <input name="ln" type="text" className="form-control" placeholder="lastname"  required/>
+              <input name="phone" type="number" className="form-control" placeholder="Phone number"  required/>
+              <input name="age" type="number" className="form-control" placeholder="Age" required/>
+              <input name="mail" type="email" className="form-control" placeholder="Email"  required/>
+              <input name="aadhar" type="number" className="form-control" placeholder="Aadhar Number"  required/>
             </div>
             <button type="submit" className="btn btn-primary">Generate</button>
           </form>
         </div>
         <hr />
         
-        <div id="retrieve">
-          <h1>Retrieve Identity</h1>
+        <div id="retrieve-user">
+          <h1>Retrieve Identity (User)</h1>
           <form onSubmit={async (event) => {
             event.preventDefault();
             let inp = document.getElementById("did");
@@ -90,6 +93,36 @@ class Main extends Component {
           </form>
         </div>
         <hr />
+
+          <div id="verifier">
+          <h1>Verifier/Third Party  </h1>
+          <form id="third" onSubmit={async (event) => {
+            event.preventDefault();
+            var formData = new FormData(document.getElementById('third'));
+            let jsonObject = {};
+            let inp = document.getElementById("didv");
+
+            if(inp.value == '')
+            formData.append("publicKey", this.props.publicKey);
+            for(const [key,value] of formData.entries()){
+              jsonObject[key] = value;
+            }
+            
+              await this.props.verifierEntity(jsonObject);
+          }}>
+            <div className="form-group mr-sm-2">
+            <input name="fn" type="text" className="form-control" placeholder="firstname"  />
+              <input name="ln" type="text" className="form-control" placeholder="lastname"  />
+              <input name="phone" type="number" className="form-control" placeholder="Phone number"  />
+              <input name="age" type="number" className="form-control" placeholder="Age" />
+              <input name="mail" type="email" className="form-control" placeholder="Email"  />
+              <input name="aadhar" type="number" className="form-control" placeholder="Aadhar Number"  />
+              <input name="publicKey" type="text" className="form-control" placeholder="Digital Identification Number" id="didv" />
+            </div>
+            <button type="submit" className="btn btn-primary">Verifiy/Authenticate</button>
+          </form>
+        </div>
+
       </div>
     );
   }

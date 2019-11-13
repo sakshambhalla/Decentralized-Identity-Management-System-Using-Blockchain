@@ -53,8 +53,11 @@ class Main extends Component {
             }).then(async (res) => {
               return res.json();
             }).then(async (res) =>{
-              this.props.addIPFS(res);
-           });  
+              if(res.status)
+                this.props.addIPFS(res.message);
+              else
+                window.alert(res.message);
+           });
           }}>
             <div className="form-group mr-sm-2">
               <input name="identity" type="text" className="form-control" placeholder="Unique Identity Number" required />

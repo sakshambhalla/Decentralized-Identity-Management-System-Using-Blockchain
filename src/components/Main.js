@@ -51,16 +51,15 @@ class Main extends Component {
                 'Content-Type': 'application/json'
               },
             }).then(async (res) => {
-              if(res.status == 400){
-                window.alert('Invalid details')
-                return;
-              }
-              return res.json();
+              return new Promise((resolve, reject)=> {
+                if(res.status === 400){
+                  reject('Invalid details')
+                }
+                else resolve(res.json());
+              });
             }).then(async (res) =>{
-
-              if(res.status != 400)
               this.props.addIPFS(res);
-           });  
+           }).catch((err) => {window.alert(err)});  
           }}>
             <div className="form-group mr-sm-2">
               <input name="identity" type="text" className="form-control" placeholder="Unique Identity Number" required />
@@ -80,7 +79,7 @@ class Main extends Component {
           <h1>Retrieve Identity (User)</h1>
           <form onSubmit={async (event) => {
             event.preventDefault();
-            let inp = document.getElementById("did");
+            let inp = document.getElementById("did")
             if(inp.value !== '')
               await this.props.retrieveIdentity(inp.value);
             else
@@ -102,7 +101,7 @@ class Main extends Component {
             let jsonObject = {};
             let inp = document.getElementById("didv");
 
-            if(inp.value == '')
+            if(inp.value === '')
             formData.append("publicKey", this.props.publicKey);
             for(const [key,value] of formData.entries()){
               jsonObject[key] = value;
@@ -122,7 +121,8 @@ class Main extends Component {
             <button type="submit" className="btn btn-primary">Verifiy/Authenticate</button>
           </form>
         </div>
-
+        <hr />
+        <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
       </div>
     );
   }

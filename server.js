@@ -163,7 +163,7 @@ app.post('/authenticate',upload.none(), (req, res) => {
                }
                res.status(200).send(web3.eth.accounts.sign(JSON.stringify(signedResponse), wallet.privateKey));
             })
-           .catch( (err) => {res.status(400).send({message:err})})
+           .catch((err) => {res.status(400).send({message:err})})
         }
     });
 })

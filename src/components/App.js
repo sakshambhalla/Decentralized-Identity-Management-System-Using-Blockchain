@@ -49,7 +49,7 @@ class App extends Component {
 async fn(details,data){
   return new Promise((resolve, reject)=>{
       if(details.fn){
-          if(details.fn == data.fn)
+          if(details.fn === data.fn)
           resolve()
           else
           reject("invalid firstname")
@@ -61,7 +61,7 @@ async fn(details,data){
 async ln(details,data){
   return new Promise((resolve, reject) => {
       if(details.ln){
-          if(details.ln == data.ln)
+          if(details.ln === data.ln)
           resolve()
           else
           reject("invalid lastname");
@@ -73,7 +73,7 @@ async ln(details,data){
 async mail(details,data){
   return new Promise((resolve, reject) => {
       if(details.mail){
-          if(details.mail == data.mail)
+          if(details.mail === data.mail)
           resolve()
           else
           reject("invalid mail");
@@ -85,7 +85,7 @@ async mail(details,data){
 async phone(details,data){
   return new Promise((resolve, reject) => {
       if(details.phone){
-          if(details.phone == data.phone)
+          if(details.phone === data.phone)
           resolve()
           else 
           reject("invalid phone number");
@@ -97,7 +97,7 @@ async phone(details,data){
 async aadhar(details,data){
   return new Promise((resolve, reject) => {
       if(details.aadhar){
-          if(details.aadhar == data.aadhar)
+          if(details.aadhar === data.aadhar)
           resolve()
           else
           reject("invalid aadhar number");
@@ -109,7 +109,7 @@ async aadhar(details,data){
 async age(details,data){
   return new Promise((resolve, reject) => {
       if(details.age){
-          if(details.age == data.age)
+          if(details.age === data.age)
           resolve()
           else
           reject("invalid age")
@@ -130,10 +130,10 @@ async age(details,data){
   }
 
   async retrieveIdentity(publicKey) {
-    this.setState({loading: true});
-    const did = await this.state.identity.methods.identities(publicKey).call();
-    this.setState({loading: false});
-    if(did.contentAddress) {
+    //this.setState({loading: true});
+    try {
+      const did = await this.state.identity.methods.identities(publicKey).call();
+      this.setState({loading: false});
       let data = await ipfs.get(did.contentAddress);
       let d = JSON.parse(data[0].content.toString())
       if(this.verify(d)) {
@@ -144,13 +144,14 @@ async age(details,data){
         }
         window.alert("Identity Retrieved and Verified Successfully...\n" + str);
       }
-    } else {
+    } catch(err) {
+      this.setState({loading: false});
       window.alert("Invalid Digital Identity");
     }
   }
   async verifierEntity(verifierData){
-    this.setState({loading: true});
-    const did =                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        await this.state.identity.methods.identities(verifierData.publicKey).call();
+    //this.setState({loading: true});
+    const did = await this.state.identity.methods.identities(verifierData.publicKey).call();
     this.setState({loading: false});
     if(did.contentAddress) {
       let data = await ipfs.get(did.contentAddress);
@@ -160,22 +161,22 @@ async age(details,data){
 
         var details = {};
     details.publicKey = verifierData.publicKey;
-    if(verifierData.fn != '')
+    if(verifierData.fn !== '')
     details.fn = verifierData.fn;
     
-    if(verifierData.ln != '')
+    if(verifierData.ln !== '')
     details.ln = verifierData.ln;
     
-    if(verifierData.age != '')
+    if(verifierData.age !== '')
     details.age = verifierData.age;
     
-    if(verifierData.aadhar != '')
+    if(verifierData.aadhar !== '')
     details.aadhar = verifierData.aadhar;
     
-    if(verifierData.mail != '')
+    if(verifierData.mail !== '')
     details.mail = verifierData.mail;
     
-    if(verifierData.phone != '')
+    if(verifierData.phone !== '')
     details.phone = verifierData.phone;
     console.log(data);
 
